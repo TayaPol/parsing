@@ -19,7 +19,7 @@ class MO_buy_new(Base):
     name = Column(String, nullable=True)
     price = Column(String, nullable=True)
     location = Column(String, nullable=True)
-    link = Column(String, nullable=True)   # здесь будет храниться очищенная ссылка
+    link = Column(String, nullable=True)
 
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
@@ -70,7 +70,7 @@ def sync_work():
                     break
 
                 try:
-                    # ---- ссылка ----
+                    # ссылка
                     a_tag = i.select_one('a[data-marker="item-title"]')
                     if not a_tag:
                         raise ValueError("Не найдена ссылка")
@@ -81,16 +81,16 @@ def sync_work():
                     clean_link = clean_url(raw_url)
                     time.sleep(random.randint(1, 3))
 
-                    # ---- название ----
+                    # название
                     name = a_tag.text.strip() if a_tag else "Без названия"
                     time.sleep(random.randint(1, 3))
 
-                    # ---- цена ----
+                    # цена
                     price_span = i.select_one('span[data-marker="item-price-value"]')
                     price = price_span.text.strip() if price_span else "Цена не указана"
                     time.sleep(random.randint(1, 3))
 
-                    # ---- адрес ----
+                    # адрес
                     address_span = i.select_one('span[data-marker="item-address"]')
                     if address_span:
                         address = address_span.text.strip()
@@ -103,7 +103,7 @@ def sync_work():
                             address = "Адрес не указан"
                     time.sleep(random.randint(1, 3))
 
-                    # ---- проверка дубликата и сохранение ----
+                    # проверка дубликата и сохранение
                     with Session() as session:
                         exists = session.query(MO_buy_new).filter(MO_buy_new.link == clean_link).first()
                         if exists:
